@@ -23,12 +23,19 @@ TSCatalog::TSCatalog(AttachedDatabase &db_p, const string &path_p, TSOpenOptions
                         target_data_dir = fs::path(db.StoredPath()).parent_path() / data_dir;
                 }
                 // Current work dir when target_data_dir is not absolute dir.
-                auto canonical_path = fs::weakly_canonical(target_data_dir);
-                if (!fs::exists(canonical_path) || !fs::is_directory(canonical_path)) {
-                        fs::create_directories(canonical_path);
+                auto database_path = fs::weakly_canonical(target_data_dir);
+                auto default_schema = database_path / static_cast<const string&>(Identifier::DefaultSchema());
+                if (!fs::exists(default_schema) || !fs::is_directory(default_schema)) {
+                        fs::create_directories(default_schema);
+                } else {
+                        // Check the validity of the database.
+                        auto status = fs::status(default_schema);
+                        if (!fs::exists(status) || !fs::is_directory(status)) {
+                                throw DataCorruptionException(path_p + "is an invalid TS database");
+                        }
                 }
 
-                path = canonical_path.string();
+                path = database_path.string();
 	} catch (fs::filesystem_error const &ex) {
                 throw InvalidInputException(ex.what());
         }
