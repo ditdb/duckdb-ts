@@ -1,0 +1,48 @@
+//===----------------------------------------------------------------------===//
+//                         DuckDB
+//
+// storage/ts_catalog.hpp
+//
+//
+//===----------------------------------------------------------------------===//
+
+#pragma once
+
+#include "duckdb/catalog/catalog.hpp"
+#include "ts_options.hpp"
+
+namespace duckdb {
+
+class TSCatalog : public Catalog {
+public:
+	explicit TSCatalog(AttachedDatabase &db_p, const string &path, TSOpenOptions options);
+	~TSCatalog();
+
+	string path;
+	TSOpenOptions options;
+
+public:
+	void Initialize(bool load_builtin) override;
+	string GetCatalogType() override {
+		return "tsengine";
+	}
+
+	optional_ptr<CatalogEntry> CreateSchema(CatalogTransaction transaction, CreateSchemaInfo &info) override;
+
+	void ScanSchemas(ClientContext &context, std::function<void(SchemaCatalogEntry &)> callback) override;
+
+	optional_ptr<SchemaCatalogEntry> LookupSchema(CatalogTransaction transaction, const EntryLookupInfo &schema_lookup,
+	                                              OnEntryNotFound if_not_found) override;
+
+	SQLiteSchemaEntry &GetMainSchema() {
+		return *main_schema;
+	}
+
+private:
+	void DropSchema(ClientContext &context, DropInfo &info) override;
+
+private:
+	unique_ptr<TSSchemaEntry> main_schema;
+};
+
+} // namespace duckdb

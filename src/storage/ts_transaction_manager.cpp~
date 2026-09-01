@@ -1,0 +1,10 @@
+#include "storage/ts_transaction_manager.hpp"
+#include "duckdb/main/attached_database.hpp"
+
+namespace duckdb {
+
+TSTransactionManager::TSTransactionManager(AttachedDatabase &db_p, TSCatalog &ts_catalog)
+    : TransactionManager(db_p), ts_catalog(ts_catalog) {
+}
+
+} // namespace duckdb

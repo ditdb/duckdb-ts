@@ -13,15 +13,13 @@ set(LOADABLE_EXTENSION_NAME ${TARGET_NAME}_loadable_extension)
 
 project(${TARGET_NAME})
 
-set(CMAKE_CXX_STANDARD "17" CACHE STRING "C++ standard to enforce")
+set(CMAKE_CXX_STANDARD "17")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(src/include)
+add_subdirectory(src)
 
-set(EXTENSION_SOURCES src/ts_extension.cpp)
-
-build_static_extension(${TARGET_NAME} ${EXTENSION_SOURCES})
-build_loadable_extension(${TARGET_NAME} " " ${EXTENSION_SOURCES})
+build_static_extension(${TARGET_NAME} ${ALL_OBJECT_FILES})
+build_loadable_extension(${TARGET_NAME} ${PARAMETERS} ${ALL_OBJECT_FILES})
 
 # Link OpenSSL in both the static library as the loadable extension
 target_link_libraries(${EXTENSION_NAME} OpenSSL::SSL OpenSSL::Crypto)

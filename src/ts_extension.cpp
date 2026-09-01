@@ -1,6 +1,7 @@
 #define DUCKDB_EXTENSION_MAIN
 
 #include "ts_extension.hpp"
+#include "ts_storage.hpp"
 #include "duckdb.hpp"
 #include "duckdb/common/exception.hpp"
 #include "duckdb/function/scalar_function.hpp"
@@ -35,8 +36,12 @@ static void LoadInternal(ExtensionLoader &loader) {
 
 	// Register another scalar function
 	auto ts_openssl_version_scalar_function = ScalarFunction("ts_openssl_version", {LogicalType::VARCHAR},
-	                                                             LogicalType::VARCHAR, TsOpenSSLVersionScalarFun);
+                                                                 LogicalType::VARCHAR, TsOpenSSLVersionScalarFun);
 	loader.RegisterFunction(ts_openssl_version_scalar_function);
+
+        auto &db = loader.GetDatabaseInstance();
+	auto &config = DBConfig::GetConfig(db);
+        StorageExtension::Register(config, "ts", make_shared_ptr<TSStorageExtension>());
 }
 
 void TsExtension::Load(ExtensionLoader &loader) {
