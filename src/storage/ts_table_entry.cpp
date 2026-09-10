@@ -1,3 +1,4 @@
+#include "storage/ts_scan.hpp"
 #include "storage/ts_catalog.hpp"
 #include "storage/ts_table_entry.hpp"
 #include "storage/ts_transaction.hpp"
@@ -6,9 +7,26 @@
 
 namespace duckdb {
 
-TSTableEntry::TSTableEntry(Catalog &catalog, SchemaCatalogEntry &schema, CreateTableInfo &info,
-                                   bool all_varchar)
+TSTableEntry::TSTableEntry(Catalog &catalog, SchemaCatalogEntry &schema, CreateTableInfo &info)
     : TableCatalogEntry(catalog, schema, info) {
+}
+
+unique_ptr<BaseStatistics> TSTableEntry::GetStatistics(ClientContext &context, column_t column_id) {
+        return nullptr;
+}
+
+TableFunction TSTableEntry::GetScanFunction(ClientContext &context, unique_ptr<FunctionData> &bind_data) {
+        return static_cast<TableFunction>(TSScanFunction());
+}
+
+TableStorageInfo TSTableEntry::GetStorageInfo(ClientContext &context) {
+        TableStorageInfo result;
+        return result;
+}
+
+void TSTableEntry::BindUpdateConstraints(Binder &binder, LogicalGet &get, LogicalProjection &proj,
+                                         LogicalUpdate &update, ClientContext &context) {
+        return;
 }
 
 } // namespace duckdb

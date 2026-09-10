@@ -14,7 +14,7 @@ namespace duckdb {
 
 class TSTableEntry : public TableCatalogEntry {
 public:
-	TSTableEntry(Catalog &catalog, SchemaCatalogEntry &schema, CreateTableInfo &info, bool all_varchar);
+	TSTableEntry(Catalog &catalog, SchemaCatalogEntry &schema, CreateTableInfo &info);
 
 public:
 	unique_ptr<BaseStatistics> GetStatistics(ClientContext &context, column_t column_id) override;

@@ -26,8 +26,9 @@ public:
 	void Commit();
 	void Rollback();
 
-	static TSTransaction &Get(ClientContext &context, Catalog &catalog);
+        TSCatalog &GetCatalog() { return ts_catalog; }
 
+        static TSTransaction &Get(ClientContext &context, Catalog &catalog);
 private:
 	TSCatalog &ts_catalog;
 };

@@ -14,9 +14,11 @@
 namespace duckdb {
 
 TSCatalog::TSCatalog(AttachedDatabase &db_p, const string &path_p, TSOpenOptions options_p)
-        : Catalog(db_p), path(path_p), options(std::move(options_p)) {
+        : Catalog(db_p), attach_path(path_p), options(std::move(options_p)) {
 	namespace fs = std::filesystem;
-	fs::path data_dir(path);
+	fs::path data_dir(attach_path);
+        database_name = data_dir.filename();
+
 	try {
 		auto target_data_dir = data_dir.is_absolute() ? data_dir : "";
 		if (target_data_dir.empty()) {
@@ -35,7 +37,7 @@ TSCatalog::TSCatalog(AttachedDatabase &db_p, const string &path_p, TSOpenOptions
                         }
                 }
 
-                path = database_path.string();
+                attach_path = database_path.string();
 	} catch (fs::filesystem_error const &ex) {
                 throw InvalidInputException(ex.what());
         }
@@ -65,7 +67,17 @@ void TSCatalog::ScanSchemas(ClientContext &context, std::function<void(SchemaCat
 optional_ptr<SchemaCatalogEntry> TSCatalog::LookupSchema(CatalogTransaction transaction,
                                                          const EntryLookupInfo &schema_lookup,
                                                          OnEntryNotFound if_not_found) {
-	throw BinderException("TS databases only have a single schema - \"%s\"", std::string(DEFAULT_SCHEMA));
+        auto &schema_name = schema_lookup.GetEntryName();
+	if (schema_name == DEFAULT_SCHEMA || schema_name == INVALID_SCHEMA) {
+		return main_schema.get();
+	}
+
+        // TODO list schema
+
+	if (if_not_found == OnEntryNotFound::RETURN_NULL) {
+		return nullptr;
+	}
+	throw BinderException("Schema \"%s\" don't been found in \"%s\"", schema_name, database_name);
 }
 
 bool TSCatalog::InMemory() {
@@ -73,7 +85,7 @@ bool TSCatalog::InMemory() {
 }
 
 string TSCatalog::GetDBPath() {
-	return path;
+	return attach_path;
 }
 
 void TSCatalog::DropSchema(ClientContext &context, DropInfo &info) {

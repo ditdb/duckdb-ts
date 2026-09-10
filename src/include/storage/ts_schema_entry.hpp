@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "storage/ts_catalog_map.hpp"
 #include "duckdb/catalog/catalog_entry/schema_catalog_entry.hpp"
 
 namespace duckdb {
@@ -46,6 +47,9 @@ private:
 	void AlterTable(TSTransaction &transaction, RemoveColumnInfo &info);
 
 	void TryDropEntry(ClientContext &context, CatalogType catalog_type, const string &name);
+
+private:
+        unique_ptr<TSCatalogMap> catalog_map;
 };
 
 } // namespace duckdb

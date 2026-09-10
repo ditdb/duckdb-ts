@@ -19,7 +19,8 @@ public:
 	explicit TSCatalog(AttachedDatabase &db_p, const string &path, TSOpenOptions options);
 	~TSCatalog();
 
-	string path;
+	string attach_path;
+        string database_name;
 	TSOpenOptions options;
 
 public:
@@ -58,6 +59,7 @@ private:
 
 private:
 	unique_ptr<TSSchemaEntry> main_schema;
+        unique_ptr<TSSchemaEntry> current_schema;
 };
 
 } // namespace duckdb
