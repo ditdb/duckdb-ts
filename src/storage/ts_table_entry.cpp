@@ -7,8 +7,12 @@
 
 namespace duckdb {
 
-TSTableEntry::TSTableEntry(Catalog &catalog, SchemaCatalogEntry &schema, CreateTableInfo &info)
-    : TableCatalogEntry(catalog, schema, info) {
+TSTableEntry::TSTableEntry(Catalog &catalog, SchemaCatalogEntry &schema, BoundCreateTableInfo &info)
+        : TableCatalogEntry(catalog, schema, info.Base()), columns(std::move(info.Base().columns)) {
+}
+
+const ColumnList &TSTableEntry::GetColumns() const {
+        return columns;
 }
 
 unique_ptr<BaseStatistics> TSTableEntry::GetStatistics(ClientContext &context, column_t column_id) {

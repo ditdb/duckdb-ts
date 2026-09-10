@@ -30,9 +30,8 @@ static TSTransaction &GetTSTransaction(CatalogTransaction transaction) {
 
 optional_ptr<CatalogEntry> TSSchemaEntry::CreateTable(CatalogTransaction transaction, BoundCreateTableInfo &info) {
         auto &trans = GetTSTransaction(transaction);
-        auto &base_info = info.Base();
-        auto table_name = static_cast<const string&>(base_info.GetTableName());
-        auto table = make_uniq<TSTableEntry>(trans.GetCatalog(), *this, base_info);
+        auto table_name = static_cast<const string&>(info.Base().GetTableName());
+        auto table = make_uniq<TSTableEntry>(trans.GetCatalog(), *this, info);
 
         return catalog_map->InsertEntry(table_name, std::move(table));
         //throw BinderException("TS databases do not support creating tables");

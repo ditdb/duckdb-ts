@@ -9,14 +9,16 @@
 #pragma once
 
 #include "duckdb/catalog/catalog_entry/table_catalog_entry.hpp"
+#include "duckdb/planner/parsed_data/bound_create_table_info.hpp"
 
 namespace duckdb {
 
 class TSTableEntry : public TableCatalogEntry {
 public:
-	TSTableEntry(Catalog &catalog, SchemaCatalogEntry &schema, CreateTableInfo &info);
+	TSTableEntry(Catalog &catalog, SchemaCatalogEntry &schema, BoundCreateTableInfo &info);
 
 public:
+        const ColumnList &GetColumns() const override;
 	unique_ptr<BaseStatistics> GetStatistics(ClientContext &context, column_t column_id) override;
 
 	TableFunction GetScanFunction(ClientContext &context, unique_ptr<FunctionData> &bind_data) override;
@@ -25,6 +27,8 @@ public:
 
 	void BindUpdateConstraints(Binder &binder, LogicalGet &get, LogicalProjection &proj, LogicalUpdate &update,
 	                           ClientContext &context) override;
+private:
+        ColumnList columns;
 };
 
 } // namespace duckdb
