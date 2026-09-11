@@ -2,6 +2,7 @@
 
 #include "ts_extension.hpp"
 #include "ts_storage.hpp"
+
 #include "duckdb.hpp"
 #include "duckdb/common/exception.hpp"
 #include "duckdb/function/scalar_function.hpp"
